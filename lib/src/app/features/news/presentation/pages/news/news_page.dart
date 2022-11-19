@@ -4,7 +4,8 @@ import 'package:newsapp/src/app/di/injector.dart';
 import 'package:newsapp/src/app/extensions/context.dart';
 import 'package:newsapp/src/app/features/news/presentation/pages/news/store/news_state.dart';
 import 'package:newsapp/src/app/features/news/presentation/pages/news/store/news_store.dart';
-import 'package:newsapp/src/app/features/news/presentation/pages/news/widgets/news_item.dart';
+import 'package:newsapp/src/app/features/news/presentation/pages/news/widgets/news_list.dart';
+import 'package:newsapp/src/app/features/news/presentation/pages/news/widgets/shimmer_news_loading.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({Key? key}) : super(key: key);
@@ -33,8 +34,9 @@ class _NewsPageState extends State<NewsPage> {
         bloc: _newsStore,
         builder: (context, state) {
           if (state is NewsLoadingState) {
-            return const Center(
-              child: CircularProgressIndicator(),
+            return const AnimatedSwitcher(
+              duration: Duration(milliseconds: 350),
+              child: ShimmerNewsLoading(),
             );
           }
           if (state is NewsFailureState) {
@@ -43,13 +45,12 @@ class _NewsPageState extends State<NewsPage> {
             );
           }
           if (state is NewsLoadedState) {
-            return RefreshIndicator(
-              onRefresh: () => _newsStore.getTreadingNews(),
-              child: ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: state.news.length,
-                itemBuilder: (_, index) => NewsItem(news: state.news[index]),
-                separatorBuilder: (_, __) => const SizedBox(height: 16),
+            return AnimatedSwitcher(
+              duration: const Duration(milliseconds: 350),
+              child: NewsList(
+                onRefresh: () => _newsStore.getTreadingNews(),
+                news: state.news,
+                onTap: (news) {},
               ),
             );
           }
