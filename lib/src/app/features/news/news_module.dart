@@ -4,8 +4,10 @@ import 'package:newsapp/src/app/features/news/data/datasources/remote/news_remot
 import 'package:newsapp/src/app/features/news/data/datasources/remote/news_remote_data_impl.dart';
 import 'package:newsapp/src/app/features/news/data/repositories/news_repository_impl.dart';
 import 'package:newsapp/src/app/features/news/domain/repositories/news_repository.dart';
+import 'package:newsapp/src/app/features/news/domain/usecases/get_news_by_category.dart';
 import 'package:newsapp/src/app/features/news/domain/usecases/get_treading_news.dart';
 import 'package:newsapp/src/app/features/news/presentation/pages/news/store/news_store.dart';
+import 'package:newsapp/src/app/features/news/presentation/pages/news/store/news_list_store.dart';
 
 @module
 abstract class NewsModule {
@@ -20,6 +22,13 @@ abstract class NewsModule {
   GetTreadingNews get getTreadingNews =>
       GetTreadingNews(newsRepository: getIt());
 
+  @lazySingleton
+  GetNewsByCategory get getNewsByCategory =>
+      GetNewsByCategory(newsRepository: getIt());
+
   @injectable
   NewsStore get newsStore => NewsStore(getTreadingNews: getIt());
+
+  @injectable
+  NewsListStore get newsListStore => NewsListStore(getNewsByCategory: getIt());
 }
