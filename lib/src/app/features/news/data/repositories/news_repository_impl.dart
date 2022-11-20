@@ -40,4 +40,32 @@ class NewsRepositoryImpl implements NewsRepository {
       }
     }
   }
+
+  @override
+  Future<Either<Failure, NewsResource>> getNewsByCategory({
+    required String category,
+  }) async {
+    try {
+      final data = await _remote.getNewsByCategory(category: category);
+      final news = data.toEntity();
+      return right(news);
+    } on ApiException catch (e) {
+      switch (e.type) {
+        case ApiErrorType.other:
+          return left(AppFailure());
+        case ApiErrorType.connection:
+          return left(ConnectionFailure());
+        case ApiErrorType.response:
+          switch (e.statusCode) {
+            case 401:
+              return left(NotAuthorizedFailure());
+            case 404:
+              return left(NotFoundFailure());
+            case 500:
+              return left(InternalServeFailure());
+          }
+          return left(ResponseFailure());
+      }
+    }
+  }
 }

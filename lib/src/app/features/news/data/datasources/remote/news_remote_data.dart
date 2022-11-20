@@ -2,4 +2,7 @@ import 'package:newsapp/src/app/features/news/data/models/news_response_model.da
 
 abstract class NewsRemoteDataSource {
   Future<NewsResponseModel> getTreadingNews();
+  Future<NewsResponseModel> getNewsByCategory({
+    required String category,
+  });
 }
