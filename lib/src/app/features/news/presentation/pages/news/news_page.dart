@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newsapp/src/app/di/injector.dart';
 import 'package:newsapp/src/app/extensions/context.dart';
+import 'package:newsapp/src/app/features/news/domain/entities/news.dart';
+import 'package:newsapp/src/app/features/news/presentation/pages/details/detais_page_params.dart';
 import 'package:newsapp/src/app/features/news/presentation/pages/news/store/news_list_store.dart';
 import 'package:newsapp/src/app/features/news/presentation/pages/news/store/news_store.dart';
 import 'package:newsapp/src/app/features/news/presentation/pages/news/widgets/highlights/highlight_list.dart';
 import 'package:newsapp/src/app/features/news/presentation/pages/news/widgets/news/news_categories_header_delegate.dart';
 import 'package:newsapp/src/app/features/news/presentation/pages/news/widgets/news/news_list.dart';
+import 'package:newsapp/src/app/routes/routes_constants.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({Key? key}) : super(key: key);
@@ -50,20 +53,18 @@ class _NewsPageState extends State<NewsPage> {
                   backgroundColor: Colors.transparent,
                   expandedHeight: context.deviceHeight * .35,
                   flexibleSpace: HighlightNews(
-                    onTap: (news) {},
+                    onTap: _navToNewsDetails,
                   ),
                 ),
                 SliverPersistentHeader(
                   pinned: true,
                   delegate: NewsCategoriesHeaderPersistentDelegate(
-                    onTap: (category) => _newsListStore.getNewsByCategory(
-                      category: category,
-                    ),
+                    onTap: _getNewsByCategory,
                   ),
                 ),
                 SliverToBoxAdapter(
                   child: NewsList(
-                    onTap: (news) {},
+                    onTap: _navToNewsDetails,
                   ),
                 )
               ],
@@ -71,6 +72,18 @@ class _NewsPageState extends State<NewsPage> {
           ),
         ),
       ),
+    );
+  }
+
+  void _navToNewsDetails(News news) {
+    final navigator = Navigator.of(context);
+    final params = DetailsPageParams(news: news);
+    navigator.pushNamed(RoutesConstants.details, arguments: params);
+  }
+
+  void _getNewsByCategory(String category) {
+    _newsListStore.getNewsByCategory(
+      category: category,
     );
   }
 
