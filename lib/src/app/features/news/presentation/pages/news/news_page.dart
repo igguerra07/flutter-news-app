@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newsapp/src/app/di/injector.dart';
 import 'package:newsapp/src/app/extensions/context.dart';
-import 'package:newsapp/src/app/features/news/presentation/pages/news/store/news_state.dart';
+import 'package:newsapp/src/app/features/news/presentation/pages/news/store/news_list_store.dart';
 import 'package:newsapp/src/app/features/news/presentation/pages/news/store/news_store.dart';
-import 'package:newsapp/src/app/features/news/presentation/pages/news/widgets/highlight_list.dart';
-import 'package:newsapp/src/app/features/news/presentation/pages/news/widgets/news_categories_header_delegate.dart';
-import 'package:newsapp/src/app/features/news/presentation/pages/news/widgets/news_list.dart';
-import 'package:newsapp/src/app/features/news/presentation/pages/news/widgets/shimmer_news_loading.dart';
+import 'package:newsapp/src/app/features/news/presentation/pages/news/widgets/highlights/highlight_list.dart';
+import 'package:newsapp/src/app/features/news/presentation/pages/news/widgets/news/news_categories_header_delegate.dart';
+import 'package:newsapp/src/app/features/news/presentation/pages/news/widgets/news/news_list.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({Key? key}) : super(key: key);
@@ -17,64 +16,70 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
-  final NewsStore _newsStore = NewsStore(getTreadingNews: getIt());
+  final NewsStore _newsStore = getIt();
+  final NewsListStore _newsListStore = getIt();
 
   @override
   void initState() {
     super.initState();
     _newsStore.getTreadingNews();
+    _newsListStore.getNewsByCategory();
+  }
+
+  @override
+  void dispose() {
+    _newsStore.close();
+    _newsListStore.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: BlocBuilder(
-          bloc: _newsStore,
-          builder: (context, state) {
-            if (state is NewsLoadingState) {
-              return const AnimatedSwitcher(
-                duration: Duration(milliseconds: 350),
-                child: ShimmerNewsLoading(),
-              );
-            }
-            if (state is NewsFailureState) {
-              return const Center(
-                child: Text("Something went wrong..."),
-              );
-            }
-            if (state is NewsLoadedState) {
-              return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 350),
-                child: CustomScrollView(
-                  slivers: [
-                    SliverAppBar(
-                      backgroundColor: Colors.transparent,
-                      expandedHeight: context.deviceHeight * .35,
-                      flexibleSpace: HighlightNews(
-                        news: state.news,
-                        onTap: (news) {},
-                      ),
-                    ),
-                    SliverPersistentHeader(
-                      pinned: true,
-                      delegate: NewsCategoriesHeaderPersistentDelegate(),
-                    ),
-                    SliverToBoxAdapter(
-                      child: NewsList(
-                        onRefresh: () => _newsStore.getTreadingNews(),
-                        news: state.news,
-                        onTap: (news) {},
-                      ),
-                    )
-                  ],
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (_) => _newsStore),
+            BlocProvider(create: (_) => _newsListStore),
+          ],
+          child: RefreshIndicator(
+            onRefresh: _onRefresh,
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  backgroundColor: Colors.transparent,
+                  expandedHeight: context.deviceHeight * .35,
+                  flexibleSpace: HighlightNews(
+                    onTap: (news) {},
+                  ),
                 ),
-              );
-            }
-            return const SizedBox.shrink();
-          },
+                SliverPersistentHeader(
+                  pinned: true,
+                  delegate: NewsCategoriesHeaderPersistentDelegate(
+                    onTap: (category) => _newsListStore.getNewsByCategory(
+                      category: category,
+                    ),
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: NewsList(
+                    onTap: (news) {},
+                  ),
+                )
+              ],
+            ),
+          ),
         ),
       ),
+    );
+  }
+
+  Future<void> _onRefresh() async {
+    await Future.wait(
+      [
+        _newsStore.getTreadingNews(),
+        _newsListStore.getNewsByCategory(),
+      ],
     );
   }
 }
