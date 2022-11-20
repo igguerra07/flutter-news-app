@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:newsapp/src/app/extensions/context.dart';
 import 'package:newsapp/src/app/features/news/domain/entities/news.dart';
-import 'package:newsapp/src/app/features/news/presentation/pages/news/widgets/highlight_image.dart';
+import 'package:newsapp/src/app/features/news/presentation/pages/news/widgets/highlights/highlight_image.dart';
 
 class HighlightNewsItem extends StatelessWidget {
   final News news;

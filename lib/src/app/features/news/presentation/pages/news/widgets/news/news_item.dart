@@ -41,9 +41,11 @@ class NewsItem extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(8),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
                           news.title,
+                          maxLines: 2,
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
