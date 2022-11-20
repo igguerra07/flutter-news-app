@@ -3,16 +3,18 @@ import 'package:flutter/material.dart';
 
 class HighlightNewsImage extends StatelessWidget {
   final String imageUrl;
+  final BorderRadius? borderRadius;
 
   const HighlightNewsImage({
     Key? key,
     required this.imageUrl,
+    this.borderRadius,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: borderRadius ?? BorderRadius.circular(16),
       child: ShaderMask(
         shaderCallback: (bounds) => const LinearGradient(
           begin: Alignment.topCenter,
