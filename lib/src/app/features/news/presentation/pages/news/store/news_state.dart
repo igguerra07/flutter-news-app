@@ -1,17 +1,24 @@
+import 'package:equatable/equatable.dart';
 import 'package:newsapp/src/app/features/news/domain/entities/news.dart';
 
-abstract class NewsState {}
+abstract class NewsState extends Equatable {
+  @override
+  List<Object?> get props => [];
+}
 
-class NewsLoadedState implements NewsState {
+class NewsLoadedState extends NewsState {
   final List<News> news;
-  
+
   NewsLoadedState({
     required this.news,
   });
+
+  @override
+  List<Object?> get props => [news];
 }
 
-class NewsInitialState implements NewsState {}
+class NewsInitialState extends NewsState {}
 
-class NewsLoadingState implements NewsState {}
+class NewsLoadingState extends NewsState {}
 
-class NewsFailureState implements NewsState {}
+class NewsFailureState extends NewsState {}

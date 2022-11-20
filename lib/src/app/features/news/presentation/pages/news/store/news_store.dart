@@ -14,7 +14,7 @@ class NewsStore extends Cubit<NewsState> {
 
   Future<void> getTreadingNews() async {
     emit(NewsLoadingState());
-    
+
     final eitherResult = await _getTreadingNews.call(const Nothing());
 
     eitherResult.fold(
