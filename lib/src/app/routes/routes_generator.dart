@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:newsapp/src/app/features/news/presentation/pages/details/detais_page_params.dart';
 import 'package:newsapp/src/app/routes/routes_constants.dart';
 import 'package:newsapp/src/app/features/news/presentation/pages/details/details_page.dart';
 import 'package:newsapp/src/app/features/news/presentation/pages/news/news_page.dart';
@@ -8,7 +9,9 @@ class RoutesGenerator {
     return {
       RoutesConstants.news: (context) => const NewsPage(),
       RoutesConstants.initial: (context) => const NewsPage(),
-      RoutesConstants.details: (context) => const NewsDetailsPage(),
+      RoutesConstants.details: (context) => NewsDetailsPage(
+            params: settings.arguments as DetailsPageParams,
+          ),
     };
   }
 
