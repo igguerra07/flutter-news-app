@@ -19,7 +19,9 @@ class NewsList extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: ListView.separated(
-        padding: const EdgeInsets.all(16),
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16).copyWith(top: 0),
         itemCount: news.length,
         itemBuilder: (_, index) => NewsItem(
           onTap: onTap,
